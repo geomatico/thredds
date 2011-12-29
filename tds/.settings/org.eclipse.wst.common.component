@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="thredds">
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
+        <dependent-module archiveName="netcdf-4.3.5-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/netcdf/netcdf">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="bufr-4.3.5-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/bufr/bufr">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="grib-4.3.5-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/grib/grib">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="opendap-4.3.5-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/opendap/opendap">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="thredds"/>
+        <property name="java-output-path" value="/thredds/target/classes"/>
+    </wb-module>
+</project-modules>
