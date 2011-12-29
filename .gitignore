@@ -17,3 +17,8 @@ atlassian-ide-plugin.xml
 
 # Ignore Dreamweaver balogna
 _notes
+
+# Eclipse project files
+.project
+.settings/
+.classpath
