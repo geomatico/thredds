@@ -146,7 +146,7 @@
 
            Reference: http://repo1.maven.org/maven2/
        =========================================================== -->
-  <distributionManagement>
+  <!--distributionManagement>
     <repository>
       <id>thredds-releases</id>
       <name>THREDDS Releases</name>
@@ -164,7 +164,7 @@
       <name>THREDDS</name>
       <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds/</url>
     </repository>
-  </repositories>
+  </repositories-->
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -280,7 +280,8 @@
       <dependency>
         <groupId>uk.ac.rdg.rersc</groupId>
         <artifactId>ncwms</artifactId>
-        <version>1.0.tds.4.2.20110419.2059</version>
+        <version>1.0.tds.4.2.20111101.2202</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.geotoolkit</groupId>
