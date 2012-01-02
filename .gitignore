@@ -19,6 +19,6 @@ atlassian-ide-plugin.xml
 _notes
 
 # Eclipse project files
-.project
-.settings/
-.classpath
+#.project
+#.settings/
+#.classpath
