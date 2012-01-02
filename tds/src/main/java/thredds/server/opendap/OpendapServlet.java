@@ -226,7 +226,9 @@ public class OpendapServlet extends AbstractServlet
           doGetDAP2Data(rs);
         } else if (requestSuffix.equalsIgnoreCase("asc") || requestSuffix.equalsIgnoreCase("ascii")) {
           doGetASC(rs);
-        } else if (requestSuffix.equalsIgnoreCase("info")) {
+        } else if (requestSuffix.equalsIgnoreCase("json")) {
+          doGetJSON(rs);
+        }else if (requestSuffix.equalsIgnoreCase("info")) {
           doGetINFO(rs);
         } else if (requestSuffix.equalsIgnoreCase("html") || requestSuffix.equalsIgnoreCase("htm")) {
           doGetHTML(rs);
@@ -330,6 +332,40 @@ public class OpendapServlet extends AbstractServlet
       // the way that getDAP2Data works
       // DataOutputStream sink = new DataOutputStream(bOut);
       // ce.send(myDDS.getName(), sink, ds);
+
+      pw.flush();
+
+    } finally { // release lock if needed
+      if (ds != null) ds.release();
+    }
+
+  }
+
+  public void doGetJSON(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
+
+    GuardedDataset ds = null;
+    try {
+      ds = getDataset(rs);
+      if (ds == null) return;
+
+      response.setHeader("XDODS-Server", getServerVersion());
+      response.setContentType("text/plain");
+      response.setHeader("Content-Description", "dods-json");
+
+      log.debug("Sending OPeNDAP JSON Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
+
+      ServerDDS dds = ds.getDDS();
+      CEEvaluator ce = new CEEvaluator(dds);
+      ce.parseConstraint(rs);
+      checkSize(dds, true);
+
+      PrintWriter pw = new PrintWriter(response.getOutputStream());      
+      dds.printConstrained(pw); // TODO: Convert metadata to JSON (possibly in JsonWriter)
+      pw.println("---------------------------------------------");
+
+      JsonWriter writer = new JsonWriter();
+      writer.asJSON(pw, dds, ds);
 
       pw.flush();
 
