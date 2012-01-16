@@ -25,9 +25,9 @@
       <dataType>Grid</dataType>
     </metadata>
 
-    <filter>
+    <!-- filter>
       <include wildcard="*eta_211.nc"/>
-    </filter>
+    </filter-->
 
   </datasetScan>
 
