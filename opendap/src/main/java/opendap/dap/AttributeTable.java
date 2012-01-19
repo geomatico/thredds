@@ -517,11 +517,12 @@ public class AttributeTable extends DAPNode
         Enumeration e = getNames();
         while (e.hasMoreElements()) {
             String name = (String) e.nextElement();
-            if (!name.equals("NC_GLOBAL"))
-            	continue;
+            if (name.equals("NC_GLOBAL") || name.equals("DODS_EXTRA")) {
             Attribute a = getAttribute(name);
             if (a != null)
                 a.printJSON(pw);
+            } else 
+            	continue;
         }
         if (Debug.isSet("AttributTable")) pw.println("Leaving AttributeTable.print()");
         pw.flush();
