@@ -95,6 +95,7 @@ public class wwwOutPut {
                 + "<td align=\"right\">\n"
                 + "<h3><a href=\"opendap_form_help.html#disposition\" valign=\"bottom\">Action:</a></h3>\n"
                 + "<td><input type=\"button\" value=\"Get ASCII\" onclick=\"ascii_button()\">\n"
+                + "<input type=\"button\" value=\"Get JSON\" onclick=\"json_button()\">\n"
                 + "<input type=\"button\" value=\"Get Binary\" onclick=\"binary_button()\">\n"
 //            + "<input type=\"button\" value=\"Send to Program\" onclick=\"program_button()\">\n" // removed 9/17/01 ndp
                 + "<input type=\"button\" value=\"Show Help\" onclick=\"help_button()\">\n"
