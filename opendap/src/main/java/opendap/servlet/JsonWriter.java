@@ -8,7 +8,6 @@ import java.util.Vector;
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
 import opendap.servers.ServerMethods;
-import ucar.nc2.NCdump;
 
 public class JsonWriter {
 
@@ -20,6 +19,20 @@ public class JsonWriter {
 			InvalidDimensionException {
 		this.pw = pw;
 		printConstrainedJSON(dds, (GuardedDataset) specialO, rs);
+//		pw.println(";");
+//		pw.println("}, \n \"variables\": { \n");
+//		for (@SuppressWarnings("rawtypes")
+//		Enumeration e = dds.getVariables(); e.hasMoreElements();) {
+//			BaseType bt = (BaseType) e.nextElement();
+//			// System.err.println("check: "+bt.getLongName()+" = "+((ServerMethods)
+//			// bt).isProject());
+//			ServerMethods sm = (ServerMethods) bt;
+//			if (sm.isProject()) {
+//				// bt.printJSON(os);
+//			}
+//		}
+//		pw.print("} ");
+//		pw.println(";");
 		pw.print("{\"" + dds.getClearName() + "\": {\n");
 		Enumeration<BaseType> e = (Enumeration<BaseType>) dds.getVariables();
 		while (e.hasMoreElements()) {
@@ -178,7 +191,7 @@ public class JsonWriter {
 
 	public void printConstrainedJSON(DDS dds, GuardedDataset ds, ReqState rs) {
 		pw.println("{");
-		pw.println("\"data_url\":\"" + rs.getRequestURL().toString() + "\",");
+		pw.println("\"data_url\":\"" + rs.getRequestURL().toString() + rs.getConstraintExpression() + "\",");
 		if (dds.getEncodedName() != null)
 			pw.println("\"dataset\":\"" + dds.getEncodedName() + "\",");
 		pw.println("\"global_attributes\":{");
@@ -186,26 +199,9 @@ public class JsonWriter {
 			DAS myDAS = ds.getDAS();
 			myDAS.printGlobalJSON(pw);
 		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (DAP2Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}		
-		pw.println(";");
-		pw.println("}, \n \"variables\": { \n");
-		for (@SuppressWarnings("rawtypes")
-		Enumeration e = dds.getVariables(); e.hasMoreElements();) {
-			BaseType bt = (BaseType) e.nextElement();
-			// System.err.println("check: "+bt.getLongName()+" = "+((ServerMethods)
-			// bt).isProject());
-			ServerMethods sm = (ServerMethods) bt;
-			if (sm.isProject()) {
-				// bt.printJSON(os);
-			}
 		}
-		pw.print("} ");
-		pw.println(";");
-		pw.println("---------------------------------------------");
 	}
 }

@@ -931,7 +931,7 @@ public class Attribute extends DAPNode {
 			Enumeration es = ((Vector) this.attr).elements();
 			while (es.hasMoreElements()) {
 				String val = (String) es.nextElement();
-				pw.println("\"" + val + "\",");
+				pw.print("\"" + val + "\"");
 			}
 		}
 		if (_Debug)
