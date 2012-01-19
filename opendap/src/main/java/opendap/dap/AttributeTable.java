@@ -494,9 +494,38 @@ public class AttributeTable extends DAPNode
         pw.println(pad + "</Attribute>");
         if (Debug.isSet("AttributTable")) pw.println("Leaving AttributeTable.print()");
         pw.flush();
+    }   
 
+	public void printJSON(PrintWriter pw) {
+        if (Debug.isSet("AttributTable")) pw.println("Entered AttributeTable.print()");
 
-    }
+        Enumeration e = getNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            Attribute a = getAttribute(name);
+            if (a != null)
+                a.printJSON(pw);
+
+        }
+        if (Debug.isSet("AttributTable")) pw.println("Leaving AttributeTable.print()");
+        pw.flush();
+	}
+	
+	public void printGlobalJSON(PrintWriter pw) {
+        if (Debug.isSet("AttributTable")) pw.println("Entered AttributeTable.print()");
+        
+        Enumeration e = getNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            if (!name.equals("NC_GLOBAL"))
+            	continue;
+            Attribute a = getAttribute(name);
+            if (a != null)
+                a.printJSON(pw);
+        }
+        if (Debug.isSet("AttributTable")) pw.println("Leaving AttributeTable.print()");
+        pw.flush();
+	}
 
     /**
      * Returns a clone of this <code>AttributeTable</code>.
@@ -518,6 +547,7 @@ public class AttributeTable extends DAPNode
             }
             return at;
     }
+
 
 }
 

@@ -360,12 +360,15 @@ public class OpendapServlet extends AbstractServlet
       ce.parseConstraint(rs);
       checkSize(dds, true);
 
-      PrintWriter pw = new PrintWriter(response.getOutputStream());      
-      dds.printConstrained(pw); // TODO: Convert metadata to JSON (possibly in JsonWriter)
-      pw.println("---------------------------------------------");
+      PrintWriter pw = new PrintWriter(response.getOutputStream());  
+      
+//      pw.println("{");
+//      pw.println("\"data_url\":\"" + rs.getRequestURL().toString() + "\",");
+//      dds.printConstrainedJSON(pw); // TODO: Convert metadata to JSON (possibly in JsonWriter)
+//      pw.println("---------------------------------------------");
 
       JsonWriter writer = new JsonWriter();
-      writer.asJSON(pw, dds, ds);
+      writer.asJSON(pw, dds, ds, rs);
 
       pw.flush();
 

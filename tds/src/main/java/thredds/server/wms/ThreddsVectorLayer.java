@@ -95,8 +95,8 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
         return this.wrappedLayer.getTitle();
     }
 
-    public String getLayerAbstract() {
-        return this.wrappedLayer.getLayerAbstract();
+    public String getAbstract() {
+        return this.wrappedLayer.getAbstract();
     }
 
     public String getUnits() {
@@ -173,5 +173,4 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
     public int getDefaultNumColorBands() {
         return this.layerSettings.getDefaultNumColorBands();
     }
-
 }
