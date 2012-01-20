@@ -174,6 +174,19 @@ public class DArray extends DVector
         if (print_semi)
             os.println(";");
     }
+    
+    public void printJSON(PrintWriter os, String space, 
+    		boolean print_comma, boolean constrained) {
+    	getPrimitiveVector().printJSON(os, space, false, constrained);
+        for (Enumeration e = dimVector.elements(); e.hasMoreElements();) {
+            DArrayDimension d = (DArrayDimension) e.nextElement();
+            os.print(",\n\"dimensions\":[\n");
+            if (d.getEncodedName() != null)
+                os.print("\"" + d.getEncodedName() + "\"\n]");
+        }
+        if (print_comma)
+            os.println(",");
+    }
 
     /**
      * Prints the value of the variable, with its declaration.  This

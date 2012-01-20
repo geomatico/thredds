@@ -187,6 +187,11 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO
                                 boolean print_semi) {
         printDecl(os, space, print_semi, false);
     }
+    
+    public final void printJSON(PrintWriter os, String space, 
+    		boolean print_comma, boolean constrained) {
+    	var.printJSON(os, space, print_comma, constrained);
+    }
 
  /**
      * Returns the OPeNDAP type name of the class instance as a <code>String</code>.

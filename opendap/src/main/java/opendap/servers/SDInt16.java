@@ -117,7 +117,14 @@ public abstract class SDInt16 extends DInt16 implements ServerMethods, RelOps, E
         super.printDecl(os, space, print_semi, constrained);
     }
 
-
+    public void printJSON(PrintWriter os, String space, 
+    		boolean print_comma, boolean constrained) {
+        if (constrained && !isProject())
+            return;
+        
+    	super.printJSON(os, space, print_comma, constrained);
+    }
+    
     /**
      * Prints the value of the variable, with its declaration.  This
      * function is primarily intended for debugging OPeNDAP applications and

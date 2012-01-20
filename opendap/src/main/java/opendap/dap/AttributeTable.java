@@ -101,6 +101,8 @@ import java.io.*;
  */
 
 public class AttributeTable extends DAPNode {
+	private static final String DODS_EXTRA = "DODS_EXTRA";
+	private static final String NC_GLOBAL = "NC_GLOBAL";
 	/**
 	 * A table of Attributes with their names as a key
 	 */
@@ -553,12 +555,12 @@ public class AttributeTable extends DAPNode {
 		Enumeration e = getNames();
 		while (e.hasMoreElements()) {
 			String name = (String) e.nextElement();
-			if (name.equals("NC_GLOBAL")) {
+			if (name.equals(NC_GLOBAL)) {
 				Attribute a = getAttribute(name);
 				if (a != null){
 					a.printJSON(pw);
 				}
-			} else if (name.equals("DODS_EXTRA")) {
+			} else if (name.equals(DODS_EXTRA)) {
 				Attribute a = getAttribute(name);
 				if (a != null){
 					pw.print(",\n");
@@ -569,6 +571,7 @@ public class AttributeTable extends DAPNode {
 				continue;
 		}
 		pw.println();
+		pw.println("},");
 		if (Debug.isSet("AttributTable"))
 			pw.println("Leaving AttributeTable.print()");
 		pw.flush();

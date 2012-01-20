@@ -146,6 +146,12 @@ public abstract class BaseType extends DAPNode
         return elementCount(false);
     }
 
+    public void printJSON(PrintWriter os, String space, 
+    		boolean print_comma, boolean constrained) {
+    	os.print("\"type\":\"" + getTypeName() + "\"");
+    	if (print_comma)
+    		os.print(",");
+    }
 
     /**
      * Write the variable's declaration in a C-style syntax. This
@@ -599,7 +605,6 @@ public abstract class BaseType extends DAPNode
             }
     }
 
-
     /**
      * Returns a clone of this <code>BaseType</code>.
      * See DAPNode.cloneDAG.
@@ -617,8 +622,6 @@ public abstract class BaseType extends DAPNode
 	        bt._attr = new Attribute(getClearName(), bt._attrTbl);
         return bt;
     }
-
-
 }
 
 

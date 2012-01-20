@@ -178,6 +178,12 @@ abstract public class DVector extends BaseType implements ClientIO {
         os.print(space + getTypeName());
         vals.printDecl(os, " ", print_semi, constrained);
     }
+    
+    public void printJSON(PrintWriter os, String space, 
+    		boolean print_comma, boolean constrained) {
+        os.print(space + getTypeName());
+        vals.printJSON(os, " ", print_comma, constrained);
+    }
 
     /**
      * Prints the value of the variable, with its declaration.  This
