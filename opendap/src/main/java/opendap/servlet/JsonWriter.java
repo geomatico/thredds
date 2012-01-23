@@ -2,6 +2,7 @@ package opendap.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -13,6 +14,7 @@ public class JsonWriter {
 
 	private PrintWriter pw = null;
 
+	@SuppressWarnings("rawtypes")
 	public void toJSON(PrintWriter pw, DDS dds, Object specialO, ReqState rs)
 			throws NoSuchVariableException, IOException,
 			InvalidDimensionException {
@@ -20,25 +22,31 @@ public class JsonWriter {
 		printGlobalJSON(dds, (GuardedDataset) specialO, rs);
 		Enumeration e = dds.getVariables();
 		if (e.hasMoreElements()) {
+			pw.println(",");
 			pw.println("\"variables\":{");
-		}			
+		}		
+		
+		ArrayList<BaseType> projected = new ArrayList<BaseType>();
 		while (e.hasMoreElements()) {
 			BaseType bt = (BaseType) e.nextElement();
+			if (!((ServerMethods) bt).isProject())
+				continue;
+			projected.add(bt);
+		}
+		for (BaseType bt : projected) {
 			writeJSON(bt, dds, specialO);
-			if (e.hasMoreElements())
+			if (projected.indexOf(bt) != projected.size() - 1)
 				pw.println(",");
 		}
-		pw.print("}");
+		pw.println("\n}\n}");
 	}
 
 	private void writeJSON(BaseType bt, DDS dds, Object specialO)
 			throws NoSuchVariableException, IOException {
 		String datasetName = dds.getEncodedName();
-		if (!((ServerMethods) bt).isProject())
-			return;
 		bt.printJSON(pw, null, true, false);
 		bt.printAttributesJSON(pw);
-		pw.print("\"data\":[");
+		pw.println("\"data\":[");
 		if (bt instanceof DSequence) {
 			DSequence dseq = (DSequence) bt;
 			boolean moreToRead = true;
@@ -62,6 +70,7 @@ public class JsonWriter {
 			}
 		}
 		pw.println("]");
+		pw.print("}");
 	}
 
 	public void toJSON(BaseType dtype) throws NoSuchAttributeException {
@@ -100,7 +109,7 @@ public class JsonWriter {
 		jsonArray(data, pw, addName, "", 0, dims, shape, 0);
 
 		if (newLine)
-			pw.print("\n");
+			pw.println();
 	}
 
 	private int jsonArray(DArray data, PrintWriter os, boolean addName,
@@ -334,7 +343,7 @@ public class JsonWriter {
 				+ rs.getConstraintExpression() + "\",");
 		if (dds.getEncodedName() != null)
 			pw.println("\"dataset\":\"" + dds.getEncodedName() + "\",");
-		pw.println("\"global_attributes\":{");
+		pw.println("\"global_attributes\":");
 		try {
 			DAS myDAS = ds.getDAS();
 			myDAS.printGlobalJSON(pw);

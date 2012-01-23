@@ -552,6 +552,7 @@ public class AttributeTable extends DAPNode {
 		if (Debug.isSet("AttributTable"))
 			pw.println("Entered AttributeTable.print()");
 
+		pw.println("{");
 		Enumeration e = getNames();
 		while (e.hasMoreElements()) {
 			String name = (String) e.nextElement();
@@ -563,7 +564,7 @@ public class AttributeTable extends DAPNode {
 			} else if (name.equals(DODS_EXTRA)) {
 				Attribute a = getAttribute(name);
 				if (a != null){
-					pw.print(",\n");
+					pw.println(",");
 					a.printJSON(pw);
 				}
 			}
@@ -571,7 +572,7 @@ public class AttributeTable extends DAPNode {
 				continue;
 		}
 		pw.println();
-		pw.println("},");
+		pw.print("}");
 		if (Debug.isSet("AttributTable"))
 			pw.println("Leaving AttributeTable.print()");
 		pw.flush();
