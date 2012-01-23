@@ -152,6 +152,7 @@ public abstract class BaseType extends DAPNode
 
     public void printJSON(PrintWriter os, String space, 
     		boolean print_comma, boolean constrained) {
+    	os.println("\"" + getEncodedName() + "\":{");
     	os.print("\"type\":\"" + getTypeName() + "\"");
     	if (print_comma)
     		os.print(",");
