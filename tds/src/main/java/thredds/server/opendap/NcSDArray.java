@@ -45,173 +45,221 @@ import opendap.dap.PrimitiveVector;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.DataOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * Wraps a netcdf variable with rank > 0 as an SDArray.
- * For char arrays, use NcSDString (rank 0 or 1) or NcSDCharArray (rank > 1).
- *
+ * Wraps a netcdf variable with rank > 0 as an SDArray. For char arrays, use
+ * NcSDString (rank 0 or 1) or NcSDCharArray (rank > 1).
+ * 
  * @author jcaron
  * @see NcSDCharArray
  */
 public class NcSDArray extends SDArray implements HasNetcdfVariable {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcSDArray.class);
+	static private org.slf4j.Logger log = org.slf4j.LoggerFactory
+			.getLogger(NcSDArray.class);
 
-  private boolean debug = false, debugRead = false;
-  private Variable ncVar = null;
-  //ignore protected BaseType elemType;
+	private boolean debug = false, debugRead = false;
+	private Variable ncVar = null;
 
-  /**
-   * Constructor: Wraps a netcdf variable in a DODS SDArray.
-   *
-   * @param v  : netcdf Variable
-   * @param bt : DODS element type
-   */
-  NcSDArray(Variable v, BaseType bt) {
-    super(Variable.getDAPName(v));
-    this.ncVar = v;
+	// ignore protected BaseType elemType;
 
-    // set dimensions
-    for (Dimension dim : v.getDimensions()) {
-      appendDim(dim.getLength(), dim.getName());
-    }
+	/**
+	 * Constructor: Wraps a netcdf variable in a DODS SDArray.
+	 * 
+	 * @param v
+	 *            : netcdf Variable
+	 * @param bt
+	 *            : DODS element type
+	 */
+	NcSDArray(Variable v, BaseType bt) {
+		super(Variable.getDAPName(v));
+		this.ncVar = v;
 
-    // this seems to be how you set the type
-    // it creates the "primitive vector"
-    addVariable(bt);
-    // ignore this.elemType = bt;
-  }
+		// set dimensions
+		for (Dimension dim : v.getDimensions()) {
+			appendDim(dim.getLength(), dim.getName());
+		}
 
-  public Variable getVariable() {
-    return ncVar;
-  }
+		// this seems to be how you set the type
+		// it creates the "primitive vector"
+		addVariable(bt);
+		// ignore this.elemType = bt;
+	}
 
-  /**
-   * Read the data values (parameters are ignored).
-   * Use the start, stop and stride values, typically set by the constraint evaluator.
-   *
-   * @param datasetName not used
-   * @param specialO    not used
-   * @return false (no more data to be read)
-   * @throws IOException
-   * @throws EOFException
-   */
-  public boolean read(String datasetName, Object specialO) throws IOException {
-    long tstart = System.currentTimeMillis();
+	public Variable getVariable() {
+		return ncVar;
+	}
 
-    Array a;
-    try {
-      if (log.isDebugEnabled())
-        log.debug(getRequestedRange());
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see opendap.servers.SDArray#printAttributesJSON(java.io.PrintWriter)
+	 */
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		Iterator<Attribute> attributes = getVariable().getAttributes().iterator();
+		if (attributes.hasNext())
+			os.println("\"attributes\":{");
+		while (attributes.hasNext()) {
+			Attribute attribute = (Attribute) attributes.next();
+			os.print("\"" + attribute.getName() + "\":\"" + attribute.getStringValue() + "\"");
+			if (attributes.hasNext())
+				os.println(",");
+			else 
+				os.println();
+		}
+		os.println("},");
+	}
 
-      // set up the netcdf read
-      int n = numDimensions();
-      List<Range> ranges = new ArrayList<Range>(n);
-      for (int i = 0; i < n; i++)
-        ranges.add(new Range(getStart(i), getStop(i), getStride(i)));
+	/**
+	 * Read the data values (parameters are ignored). Use the start, stop and
+	 * stride values, typically set by the constraint evaluator.
+	 * 
+	 * @param datasetName
+	 *            not used
+	 * @param specialO
+	 *            not used
+	 * @return false (no more data to be read)
+	 * @throws IOException
+	 * @throws EOFException
+	 */
+	public boolean read(String datasetName, Object specialO) throws IOException {
+		long tstart = System.currentTimeMillis();
 
-      try {
-        a = ncVar.read(ranges);
+		Array a;
+		try {
+			if (log.isDebugEnabled())
+				log.debug(getRequestedRange());
 
-      } catch (java.lang.ArrayIndexOutOfBoundsException t) {
-        log.error(getRequestedRange(), t);
-        throw new RuntimeException("NcSDArray java.lang.ArrayIndexOutOfBoundsException=" + t.getMessage()+
-            " for request= "+ getRequestedRange()+" dataset= "+ datasetName);
-      }
+			// set up the netcdf read
+			int n = numDimensions();
+			List<Range> ranges = new ArrayList<Range>(n);
+			for (int i = 0; i < n; i++)
+				ranges.add(new Range(getStart(i), getStop(i), getStride(i)));
 
-      if (debug)
-        System.out.println("  NcSDArray Read " + getEncodedName() + " " + a.getSize() + " elems of type = " + a.getElementType());
-      if (debugRead) System.out.println("  Read = " + a.getSize() + " elems of type = " + a.getElementType());
-      if (log.isDebugEnabled()) {
-        long tookTime = System.currentTimeMillis() - tstart;
-        log.debug("NcSDArray read array: " + tookTime * .001 + " seconds");
-      }
+			try {
+				a = ncVar.read(ranges);
 
-    } catch (InvalidDimensionException e) {
-      log.error(getRequestedRange(), e);
-      throw new IllegalStateException("NcSDArray InvalidDimensionException=" + e.getMessage());
+			} catch (java.lang.ArrayIndexOutOfBoundsException t) {
+				log.error(getRequestedRange(), t);
+				throw new RuntimeException(
+						"NcSDArray java.lang.ArrayIndexOutOfBoundsException="
+								+ t.getMessage() + " for request= "
+								+ getRequestedRange() + " dataset= "
+								+ datasetName);
+			}
 
-    } catch (InvalidRangeException e) {
-      log.error(getRequestedRange(), e);
-      throw new IllegalStateException("NcSDArray InvalidRangeException=" + e.getMessage());
-    }
-    setData(a);
+			if (debug)
+				System.out.println("  NcSDArray Read " + getEncodedName() + " "
+						+ a.getSize() + " elems of type = "
+						+ a.getElementType());
+			if (debugRead)
+				System.out.println("  Read = " + a.getSize()
+						+ " elems of type = " + a.getElementType());
+			if (log.isDebugEnabled()) {
+				long tookTime = System.currentTimeMillis() - tstart;
+				log.debug("NcSDArray read array: " + tookTime * .001
+						+ " seconds");
+			}
 
-    if (debugRead) System.out.println(" PrimitiveVector len = " + getPrimitiveVector().getLength() +
-            " type = " + getPrimitiveVector().getTemplate());
+		} catch (InvalidDimensionException e) {
+			log.error(getRequestedRange(), e);
+			throw new IllegalStateException(
+					"NcSDArray InvalidDimensionException=" + e.getMessage());
 
-    return (false);
-  }
+		} catch (InvalidRangeException e) {
+			log.error(getRequestedRange(), e);
+			throw new IllegalStateException("NcSDArray InvalidRangeException="
+					+ e.getMessage());
+		}
+		setData(a);
 
-  private String getRequestedRange() {
-    try {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append("NcSDArray read " + ncVar.getFullName());
-      for (int i = 0; i < numDimensions(); i++) {
-        DArrayDimension d = getDimension(i);
-        sbuff.append(" " + d.getEncodedName() + "(" + getStart(i) + "," + getStride(i) + "," + getStop(i) + ")");
-      }
-      return sbuff.toString();
+		if (debugRead)
+			System.out.println(" PrimitiveVector len = "
+					+ getPrimitiveVector().getLength() + " type = "
+					+ getPrimitiveVector().getTemplate());
 
-    } catch (InvalidDimensionException e) {
-      e.printStackTrace();
-      return e.getMessage();
-    }
-  }
+		return (false);
+	}
 
-  public void setData(Array data) {
-    PrimitiveVector pv = getPrimitiveVector();
-    if (debugRead)
-      System.out.println(" PrimitiveVector type = " + pv.getTemplate() +
-              " pv type = " + pv.getClass().getName());
+	private String getRequestedRange() {
+		try {
+			StringBuilder sbuff = new StringBuilder();
+			sbuff.append("NcSDArray read " + ncVar.getFullName());
+			for (int i = 0; i < numDimensions(); i++) {
+				DArrayDimension d = getDimension(i);
+				sbuff.append(" " + d.getEncodedName() + "(" + getStart(i) + ","
+						+ getStride(i) + "," + getStop(i) + ")");
+			}
+			return sbuff.toString();
 
-    if (ncVar.getDataType() == DataType.STRING) {
-      int size = (int) data.getSize();
-      NcSDString[] dodsBT = new NcSDString[size];
-      IndexIterator ii = data.getIndexIterator();
-      int count = 0;
-      while (ii.hasNext()) {
-        dodsBT[count++] = new NcSDString(Variable.getDAPName(ncVar), (String) ii.getObjectNext());
-      }
-      pv.setInternalStorage(dodsBT);
+		} catch (InvalidDimensionException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+	}
 
-    } else if (ncVar.getDataType() == DataType.STRUCTURE) {
-      NcSDStructure sds = (NcSDStructure) pv.getTemplate();
+	public void setData(Array data) {
+		PrimitiveVector pv = getPrimitiveVector();
+		if (debugRead)
+			System.out.println(" PrimitiveVector type = " + pv.getTemplate()
+					+ " pv type = " + pv.getClass().getName());
 
-      int size = (int) data.getSize();
-      NcSDStructure[] dodsBT = new NcSDStructure[size];
+		if (ncVar.getDataType() == DataType.STRING) {
+			int size = (int) data.getSize();
+			NcSDString[] dodsBT = new NcSDString[size];
+			IndexIterator ii = data.getIndexIterator();
+			int count = 0;
+			while (ii.hasNext()) {
+				dodsBT[count++] = new NcSDString(Variable.getDAPName(ncVar),
+						(String) ii.getObjectNext());
+			}
+			pv.setInternalStorage(dodsBT);
 
-      IndexIterator ii = data.getIndexIterator();
-      int count = 0;
-      while (ii.hasNext()) {
-        StructureData sdata = (StructureData) ii.getObjectNext();
-        dodsBT[count] = new NcSDStructure(sds, sdata); // stupid replication - need to override externalize
-        count++;
-      }
-      pv.setInternalStorage(dodsBT);
+		} else if (ncVar.getDataType() == DataType.STRUCTURE) {
+			NcSDStructure sds = (NcSDStructure) pv.getTemplate();
 
-    } else {
+			int size = (int) data.getSize();
+			NcSDStructure[] dodsBT = new NcSDStructure[size];
 
-      // copy the data into the PrimitiveVector
-      // this is optimized to (possibly) eliminate the copy
-      Object pa = data.get1DJavaArray(data.getElementType());
-      pv.setInternalStorage(pa);
-    }
+			IndexIterator ii = data.getIndexIterator();
+			int count = 0;
+			while (ii.hasNext()) {
+				StructureData sdata = (StructureData) ii.getObjectNext();
+				dodsBT[count] = new NcSDStructure(sds, sdata); // stupid
+																// replication -
+																// need to
+																// override
+																// externalize
+				count++;
+			}
+			pv.setInternalStorage(dodsBT);
 
-    setRead(true);
-  }
+		} else {
 
-  public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
-    long tstart = System.currentTimeMillis();
+			// copy the data into the PrimitiveVector
+			// this is optimized to (possibly) eliminate the copy
+			Object pa = data.get1DJavaArray(data.getElementType());
+			pv.setInternalStorage(pa);
+		}
 
-    setData(sdata.getArray(m));
-    externalize(sink);
+		setRead(true);
+	}
 
-    if (log.isDebugEnabled()) {
-      long tookTime = System.currentTimeMillis() - tstart;
-      log.debug("NcSDArray serialize: " + tookTime * .001 + " seconds");
-    }
-  }
+	public void serialize(DataOutputStream sink, StructureData sdata,
+			StructureMembers.Member m) throws IOException {
+		long tstart = System.currentTimeMillis();
+
+		setData(sdata.getArray(m));
+		externalize(sink);
+
+		if (log.isDebugEnabled()) {
+			long tookTime = System.currentTimeMillis() - tstart;
+			log.debug("NcSDArray serialize: " + tookTime * .001 + " seconds");
+		}
+	}
 
 }

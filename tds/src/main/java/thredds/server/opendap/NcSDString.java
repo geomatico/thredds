@@ -38,6 +38,8 @@ import opendap.servers.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
+import java.io.PrintWriter;
+import java.util.Iterator;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -113,6 +115,28 @@ public class NcSDString extends SDString implements HasNetcdfVariable {
   }
 
   public Variable getVariable() { return ncVar; }
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see opendap.servers.SDArray#printAttributesJSON(java.io.PrintWriter)
+   */
+  @Override
+  public void printAttributesJSON(PrintWriter os) {
+	  Iterator<Attribute> attributes = getVariable().getAttributes().iterator();
+	  if (attributes.hasNext())
+		  os.println("\"attributes\":{");
+	  while (attributes.hasNext()) {
+		  Attribute attribute = (Attribute) attributes.next();
+		  os.print("\"" + attribute.getName() + "\":\"" + attribute.getStringValue() + "\"");
+		  if (attributes.hasNext())
+			  os.println(",");
+		  else 
+			  os.println();
+	  }
+	  os.println("},");
+  }
+	
   public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
     localVal = sdata.getScalarString(m);
     setValue(localVal);
