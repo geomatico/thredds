@@ -167,6 +167,12 @@ public class asciiSeq extends DSequence implements toASCII {
         return (s);
     }
 
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 

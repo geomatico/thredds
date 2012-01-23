@@ -638,6 +638,12 @@ public class DGrid extends DConstructor implements ClientIO {
         return g;
     }
 
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 

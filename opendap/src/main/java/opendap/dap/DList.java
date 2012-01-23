@@ -40,6 +40,8 @@
 
 package opendap.dap;
 
+import java.io.PrintWriter;
+
 /**
  * This class implements a simple list of OPeNDAP data
  * types. A list is a simple sequence of data items, without the
@@ -78,6 +80,12 @@ public class DList extends DVector {
     public String getTypeName() {
         return "List";
     }
+
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 }

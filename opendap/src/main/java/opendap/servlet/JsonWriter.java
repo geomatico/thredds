@@ -25,7 +25,10 @@ public class JsonWriter {
 		while (e.hasMoreElements()) {
 			BaseType bt = (BaseType) e.nextElement();
 			writeJSON(bt, dds, specialO);
+			if (e.hasMoreElements())
+				pw.println(",");
 		}
+		pw.print("}");
 	}
 
 	private void writeJSON(BaseType bt, DDS dds, Object specialO)
@@ -34,6 +37,8 @@ public class JsonWriter {
 		if (!((ServerMethods) bt).isProject())
 			return;
 		bt.printJSON(pw, null, true, false);
+		bt.printAttributesJSON(pw);
+		pw.print("\"data\":[");
 		if (bt instanceof DSequence) {
 			DSequence dseq = (DSequence) bt;
 			boolean moreToRead = true;
@@ -49,22 +54,24 @@ public class JsonWriter {
 			if (!((ServerMethods) bt).isRead()) // make sure data is in memory,
 												// but don't read it twice!
 				((ServerMethods) bt).read(datasetName, specialO);
-			toJSON(bt);
+			try {
+				toJSON(bt);
+			} catch (NoSuchAttributeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		pw.println("]");
 	}
 
-	public void toJSON(BaseType dtype) {
-		toJSON(dtype, true, null, true);
+	public void toJSON(BaseType dtype) throws NoSuchAttributeException {
+		toJSON(dtype, false, null, true);
 	}
 
 	private void toJSON(BaseType dtype, boolean addName, String rootName,
-			boolean newLine) {
+			boolean newLine) throws NoSuchAttributeException {
 		if (dtype instanceof DArray)
-			try {
-				showArray((DArray) dtype, pw, addName, rootName, newLine);
-			} catch (NoSuchAttributeException e) {
-				e.printStackTrace();
-			}
+			showArray((DArray) dtype, pw, addName, rootName, newLine);
 //		else if (dtype instanceof DGrid)
 //			showGrid((DGrid) dtype, pw, addName, rootName, newLine);
 //		else if (dtype instanceof DSequence)
@@ -97,43 +104,44 @@ public class JsonWriter {
 	}
 
 	private int jsonArray(DArray data, PrintWriter os, boolean addName,
-			String label, int index, int dims, int shape[], int offset) {
+			String label, int index, int dims, int shape[], int offset) throws NoSuchAttributeException {
 
-		if (dims == 1) {
+        if (dims == 1) {
 
-			if (addName)
-				os.print(label);
+            if (addName)
+                os.print(label);
 
-			for (int i = 0; i < shape[offset]; i++) {
-				PrimitiveVector pv = data.getPrimitiveVector();
-				if (pv instanceof BaseTypePrimitiveVector) {
-					BaseType bt = ((BaseTypePrimitiveVector) pv)
-							.getValue(index++);
-					if ((i > 0) && (bt instanceof DString))
-						os.print(", ");
-					toJSON(bt, false, null, false);
-				} else {
-					if (i > 0)
-						os.print(", ");
-					pv.printSingleVal(os, index++);
-				}
+            for (int i = 0; i < shape[offset]; i++) {
+                PrimitiveVector pv = data.getPrimitiveVector();
+                if (pv instanceof BaseTypePrimitiveVector) {
+                    BaseType bt = ((BaseTypePrimitiveVector) pv).getValue(index++);
+                    if ((i > 0) && (bt instanceof DString))
+                        os.print(", ");
+                    toJSON(bt, false, null, false);
+                } else {
+                    os.print("[");
+                    pv.printSingleVal(os, index++);
+                    os.print("]");
+                    if (i >= 0 && i < shape[offset] - 1)
+                    	os.println(", ");
+                }
 
-			}
-			if (addName)
-				os.print("\n");
-			return index;
+            }
+            if (addName) os.print("\n");
+            return index;
 
-		} else {
+        } else {
 
-			for (int i = 0; i < shape[offset]; i++) {
-				String s = label + "[" + i + "]";
-				if ((dims - 1) == 1)
-					s += ", ";
-				index = jsonArray(data, os, addName, s, index, dims - 1,
-						shape, offset + 1);
-			}
-			return index;
-		}
+            for (int i = 0; i < shape[offset]; i++) {
+                String s = label + "[" + i + "]";
+                if ((dims - 1) == 1)
+                    s += ", ";
+                index = jsonArray(data, os, addName, s, index, dims - 1, shape, offset + 1);
+                if (i >= 0 && i < shape[offset] - 1)
+                	os.println(",");
+            }
+            return index;
+        }
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -322,7 +330,7 @@ public class JsonWriter {
 
 	public void printGlobalJSON(DDS dds, GuardedDataset ds, ReqState rs) {
 		pw.println("{");
-		pw.println("\"data_url\":\"" + rs.getRequestURL().toString()
+		pw.println("\"data_url\":\"" + rs.getRequestURL().toString() + "?"
 				+ rs.getConstraintExpression() + "\",");
 		if (dds.getEncodedName() != null)
 			pw.println("\"dataset\":\"" + dds.getEncodedName() + "\",");

@@ -170,6 +170,12 @@ public class DInt16 extends DPrimitive implements ClientIO {
         // pads it out with zero's
         sink.writeInt((int) val);
     }
+
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 

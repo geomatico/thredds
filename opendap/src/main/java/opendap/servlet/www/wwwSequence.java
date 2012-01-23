@@ -108,6 +108,12 @@ public class wwwSequence extends DSequence implements BrowserForm {
 
     }
 
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
 

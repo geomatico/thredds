@@ -175,6 +175,12 @@ public class DByte extends DPrimitive implements ClientIO {
         }
         sink.writeByte(val);
     }
+
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 

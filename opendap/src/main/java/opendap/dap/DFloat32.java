@@ -163,6 +163,12 @@ public class DFloat32 extends DPrimitive implements ClientIO {
     public void externalize(DataOutputStream sink) throws IOException {
         sink.writeFloat(val);
     }
+
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 

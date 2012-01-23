@@ -178,14 +178,15 @@ public class DArray extends DVector
     public void printJSON(PrintWriter os, String space, 
     		boolean print_comma, boolean constrained) {
     	getPrimitiveVector().printJSON(os, space, false, constrained);
+    	os.println(",\n\"dimensions\":[");
         for (Enumeration e = dimVector.elements(); e.hasMoreElements();) {
-            DArrayDimension d = (DArrayDimension) e.nextElement();
-            os.print(",\n\"dimensions\":[\n");
+            DArrayDimension d = (DArrayDimension) e.nextElement();            
             if (d.getEncodedName() != null)
-                os.print("\"" + d.getEncodedName() + "\"\n]");
+                os.print("\"" + d.getEncodedName() + "\"");
+            if (e.hasMoreElements())
+                os.println(",");
         }
-        if (print_comma)
-            os.println(",");
+        os.println("],");
     }
 
     /**
@@ -509,5 +510,9 @@ public class DArray extends DVector
         return a;
     }
 
-   
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}   
 }

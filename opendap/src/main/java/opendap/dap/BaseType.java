@@ -45,6 +45,8 @@ import opendap.dap.parsers.DDSXMLParser;
 import java.io.*;
 import java.util.Enumeration;
 
+import ucar.nc2.Variable;
+
 /**
  * This abstract class defines the basic data type features for the OPeNDAP data
  * access protocol (DAP) data types. All of the DAP type classes
@@ -145,6 +147,8 @@ public abstract class BaseType extends DAPNode
     public final int elementCount() {
         return elementCount(false);
     }
+    
+    abstract public void printAttributesJSON(PrintWriter os);
 
     public void printJSON(PrintWriter os, String space, 
     		boolean print_comma, boolean constrained) {
@@ -304,7 +308,7 @@ public abstract class BaseType extends DAPNode
      */
     abstract public void printVal(PrintWriter os, String space,
                                   boolean print_decl_p);
-
+    
     /**
      * Print the variable's value.  Same as
      * <code>printVal(os, space, true)</code>.

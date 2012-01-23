@@ -353,6 +353,12 @@ public class DStructure extends DConstructor implements ClientIO {
         return s;
     }
 
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 

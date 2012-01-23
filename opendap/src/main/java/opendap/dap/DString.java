@@ -228,6 +228,12 @@ public class DString extends DPrimitive implements ClientIO {
 	    super.printConstraint(os);
     }
 
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
 

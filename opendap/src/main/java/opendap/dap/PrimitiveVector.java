@@ -224,7 +224,6 @@ abstract public class PrimitiveVector extends DAPNode implements ClientIO
      */
     abstract public void printSingleVal(PrintWriter os, int index);
 
-
     /**
      * Returns (a reference to) the internal storage for PrimitiveVector.
      * <h2><i>WARNING:</i></h2>

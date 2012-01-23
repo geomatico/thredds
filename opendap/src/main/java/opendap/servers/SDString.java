@@ -123,8 +123,17 @@ public abstract class SDString extends DString implements
 
         super.printDecl(os, space, print_semi, constrained);
     }
+    
+    /* (non-Javadoc)
+	 * @see opendap.dap.DString#printAttributesJSON(java.io.PrintWriter)
+	 */
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		super.printAttributesJSON(os);
+	}
 
-    public void printJSON(PrintWriter os, String space, 
+	public void printJSON(PrintWriter os, String space, 
     		boolean print_comma, boolean constrained) {
         if (constrained && !isProject())
             return;

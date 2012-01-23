@@ -116,7 +116,17 @@ public abstract class SDFloat64 extends DFloat64 implements ServerMethods, RelOp
         super.printDecl(os, space, print_semi, constrained);
     }
 
-    public void printJSON(PrintWriter os, String space, 
+    
+    /* (non-Javadoc)
+	 * @see opendap.dap.DFloat64#printAttributesJSON(java.io.PrintWriter)
+	 */
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		// TODO Auto-generated method stub
+		super.printAttributesJSON(os);
+	}
+
+	public void printJSON(PrintWriter os, String space, 
     		boolean print_comma, boolean constrained) {
         if (constrained && !isProject())
             return;
