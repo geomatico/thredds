@@ -128,9 +128,7 @@ public class JsonWriter {
                         os.print(", ");
                     toJSON(bt, false, null, false);
                 } else {
-                    os.print("[");
                     pv.printSingleVal(os, index++);
-                    os.print("]");
                     if (i >= 0 && i < shape[offset] - 1)
                     	os.println(", ");
                 }
@@ -145,7 +143,9 @@ public class JsonWriter {
                 String s = label + "[" + i + "]";
                 if ((dims - 1) == 1)
                     s += ", ";
+                os.print("[");
                 index = jsonArray(data, os, addName, s, index, dims - 1, shape, offset + 1);
+                os.print("]");
                 if (i >= 0 && i < shape[offset] - 1)
                 	os.println(",");
             }
