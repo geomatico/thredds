@@ -46,62 +46,70 @@ import ucar.nc2.*;
 
 /**
  * Wraps a netcdf scalar float variable.
- *
+ * 
  * @author jcaron
  */
 public class NcSDFloat32 extends SDFloat32 implements HasNetcdfVariable {
-  private Variable ncVar;
+	private Variable ncVar;
 
-  /**
-   * Constructor
-   *
-   * @param v : the netcdf Variable
-   */
-  NcSDFloat32(Variable v) {
-      super(Variable.getDAPName(v));
-    this.ncVar = v;
-  }
+	/**
+	 * Constructor
+	 * 
+	 * @param v
+	 *            : the netcdf Variable
+	 */
+	NcSDFloat32(Variable v) {
+		super(Variable.getDAPName(v));
+		this.ncVar = v;
+	}
 
-  public Variable getVariable() { return ncVar; }
+	public Variable getVariable() {
+		return ncVar;
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see opendap.servers.SDArray#printAttributesJSON(java.io.PrintWriter)
-   */
-  @Override
-  public void printAttributesJSON(PrintWriter os) {
-	  Iterator<Attribute> attributes = getVariable().getAttributes()
-			  .iterator();
-	  if (attributes.hasNext())
-		  os.println("\"attributes\":{");
-	  while (attributes.hasNext()) {
-		  Attribute attribute = (Attribute) attributes.next();
-		  os.print("\"" + attribute.getName() + "\":\""
-				  + attribute.getStringValue() + "\"");
-		  if (attributes.hasNext())
-			  os.println(",");
-		  else
-			  os.println();
-	  }
-	  os.println("},");
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see opendap.servers.SDArray#printAttributesJSON(java.io.PrintWriter)
+	 */
+	@Override
+	public void printAttributesJSON(PrintWriter os) {
+		Iterator<Attribute> attributes = getVariable().getAttributes()
+				.iterator();
+		if (attributes.hasNext())
+			os.println("\"attributes\":{");
+		while (attributes.hasNext()) {
+			Attribute attribute = (Attribute) attributes.next();
+			if (attribute.isString())
+				os.print("\"" + attribute.getName() + "\":\""
+						+ attribute.getStringValue() + "\"");
+			else
+				os.print("\"" + attribute.getName() + "\":"
+						+ attribute.getNumericValue().toString());
+			if (attributes.hasNext())
+				os.println(",");
+			else
+				os.println();
+		}
+		os.println("},");
+	}
 
-  /**
-   * Read the value (parameters are ignored).
-   */
-  public boolean read(String datasetName, Object specialO) throws IOException {
-    setData(ncVar.read());
-    return (false);
-  }
+	/**
+	 * Read the value (parameters are ignored).
+	 */
+	public boolean read(String datasetName, Object specialO) throws IOException {
+		setData(ncVar.read());
+		return (false);
+	}
 
-  public void setData(Array data) {
-    setValue(data.getFloat(data.getIndex()));
-    setRead(true);
-  }
+	public void setData(Array data) {
+		setValue(data.getFloat(data.getIndex()));
+		setRead(true);
+	}
 
-  public void serialize(DataOutputStream sink, StructureData sdata, StructureMembers.Member m) throws IOException {
-    setValue( sdata.getScalarFloat(m));
-    externalize(sink);
-  }
+	public void serialize(DataOutputStream sink, StructureData sdata,
+			StructureMembers.Member m) throws IOException {
+		setValue(sdata.getScalarFloat(m));
+		externalize(sink);
+	}
 }

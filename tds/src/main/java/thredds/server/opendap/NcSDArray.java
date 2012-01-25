@@ -105,7 +105,10 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 			os.println("\"attributes\":{");
 		while (attributes.hasNext()) {
 			Attribute attribute = (Attribute) attributes.next();
-			os.print("\"" + attribute.getName() + "\":\"" + attribute.getStringValue() + "\"");
+			if (attribute.isString())
+				os.print("\"" + attribute.getName() + "\":\"" + attribute.getStringValue() + "\"");
+			else
+				os.print("\"" + attribute.getName() + "\":" + attribute.getNumericValue().toString());
 			if (attributes.hasNext())
 				os.println(",");
 			else 
